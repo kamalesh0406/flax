@@ -20,7 +20,6 @@ from flax import linen as nn
 
 import jax
 from jax import random
-from jax import test_util as jtu
 from jax.nn import initializers
 import jax.numpy as jnp
 
@@ -51,19 +50,6 @@ class PoolTest(absltest.TestCase):
         [0.5, 1., 0.5],
         [0.25, 0.5, 0.25],
     ]).reshape((1, 3, 3, 1))
-    np.testing.assert_allclose(y_grad, expected_grad)
-
-  def test_avg_pool_no_batch(self):
-    x = jnp.full((3, 3, 1), 2.)
-    pool = lambda x: nn.avg_pool(x, (2, 2))
-    y = pool(x)
-    np.testing.assert_allclose(y, np.full((2, 2, 1), 2.))
-    y_grad = jax.grad(lambda x: pool(x).sum())(x)
-    expected_grad = jnp.array([
-        [0.25, 0.5, 0.25],
-        [0.5, 1., 0.5],
-        [0.25, 0.5, 0.25],
-    ]).reshape((3, 3, 1))
     np.testing.assert_allclose(y_grad, expected_grad)
 
   def test_max_pool(self):
@@ -252,31 +238,6 @@ class RecurrentTest(absltest.TestCase):
         'hh': {'bias': (6*4,), 'kernel': (3, 3, 6, 6*4)},
         'ih': {'bias': (6*4,), 'kernel': (3, 3, 3, 6*4)},
     })
-    
-  def test_optimized_lstm_cell_matches_regular(self):
-
-    # Create regular LSTMCell.
-    rng = random.PRNGKey(0)
-    key1, key2 = random.split(rng)
-    x = random.normal(key1, (2, 3))
-    c0, h0 = nn.LSTMCell.initialize_carry(rng, (2,), 4)
-    self.assertEqual(c0.shape, (2, 4))
-    self.assertEqual(h0.shape, (2, 4))
-    lstm = nn.LSTMCell()
-    (_, y), lstm_params = lstm.init_with_output(key2, (c0, h0), x)    
-    
-    # Create OptimizedLSTMCell.
-    rng = random.PRNGKey(0)
-    key1, key2 = random.split(rng)
-    x = random.normal(key1, (2, 3))
-    c0, h0 = nn.OptimizedLSTMCell.initialize_carry(rng, (2,), 4)
-    self.assertEqual(c0.shape, (2, 4))
-    self.assertEqual(h0.shape, (2, 4))
-    lstm_opt = nn.OptimizedLSTMCell()
-    (_, y_opt), lstm_opt_params = lstm_opt.init_with_output(key2, (c0, h0), x)    
-    
-    np.testing.assert_allclose(y, y_opt, rtol=1e-6)
-    jtu.check_eq(lstm_params, lstm_opt_params)      
 
 
 if __name__ == '__main__':

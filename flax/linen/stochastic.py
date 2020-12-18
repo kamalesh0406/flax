@@ -21,15 +21,13 @@ import jax.numpy as jnp
 
 from flax.linen.module import Module, compact
 
-
 class Dropout(Module):
   """Create a dropout layer.
 
-    Attributes:
+    Args:
       rate: the dropout probability.  (_not_ the keep rate!)
   """
   rate: float
-
   @compact
   def __call__(self, inputs, deterministic=False, rng=None, broadcast_dims=()):
     """Applies a random dropout mask to the input.
@@ -37,12 +35,10 @@ class Dropout(Module):
     Args:
       inputs: the inputs that should be randomly masked.
       deterministic: if false the inputs are scaled by `1 / (1 - rate)` and
-        masked, whereas if true, no mask is applied and the inputs are returned
-        as is.
+        masked, whereas if true, no mask is applied and the inputs are returned as
+        is.
       rng: an optional `jax.random.PRNGKey`. By default `nn.make_rng()` will
         be used.
-      broadcast_dims: an optional tuple specifying in which dimensions to
-        broadcast the dropout to.
 
     Returns:
       The masked inputs reweighted to preserve mean.

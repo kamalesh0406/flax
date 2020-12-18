@@ -18,26 +18,23 @@ import time
 
 from absl import flags
 from absl.testing import absltest
-from absl.testing.flagsaver import flagsaver
-
 from flax.testing import Benchmark
 import jax
 import numpy as np
 
 # Local imports.
-import main
+import train
 from configs import v100_x8_mixed_precision as config_lib
 
 # Parse absl flags test_srcdir and test_tmpdir.
 jax.config.parse_flags_with_absl()
-
-FLAGS = flags.FLAGS
+# Require JAX omnistaging mode.
+jax.config.enable_omnistaging()
 
 
 class ImagenetBenchmark(Benchmark):
   """Benchmarks for the ImageNet Flax example."""
 
-  @flagsaver
   def _test_8x_v100_half_precision(
       self, num_epochs, min_accuracy, max_accuracy):
     """Utility to benchmark ImageNet on 8xV100 GPUs. Use in your test func."""
@@ -45,11 +42,8 @@ class ImagenetBenchmark(Benchmark):
     config = config_lib.get_config()
     config.num_epochs = num_epochs
 
-    FLAGS.config = config
-    FLAGS.workdir = workdir
-
     start_time = time.time()
-    main.main([])
+    train.train_and_evaluate(config, workdir)
     benchmark_time = time.time() - start_time
     summaries = self.read_summaries(workdir)
 

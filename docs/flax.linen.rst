@@ -3,9 +3,7 @@ flax.linen package
 ==================
 
 .. currentmodule:: flax.linen
-
-Linen is the Flax Module system. Read more about our design goals in the `Linen README <https://github.com/google/flax/blob/master/flax/linen/README.md>`_.
-
+.. automodule:: flax.linen
 
 
 Module
@@ -91,15 +89,6 @@ Attention primitives
     SelfAttention
 
 
-Stochastic
-------------------------
-
-.. autosummary::
-  :toctree: _autosummary
-  
-    Dropout
-    
-
 RNN primitives
 ------------------------
 
@@ -107,5 +96,4 @@ RNN primitives
   :toctree: _autosummary
 
     LSTMCell
-    OptimizedLSTMCell
     GRUCell
