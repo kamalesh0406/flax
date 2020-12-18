@@ -21,8 +21,8 @@ from jax import numpy as jnp
 
 import models
 
-# Parse absl flags test_srcdir and test_tmpdir.
-jax.config.parse_flags_with_absl()
+
+jax.config.update('jax_disable_most_optimizations', True)
 
 
 class ResNetV1Test(absltest.TestCase):

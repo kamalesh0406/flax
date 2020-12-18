@@ -297,7 +297,7 @@ class Module:
   While no methods are special-cased, ``__call__`` is a popular choice because
   it allows you to use module instances as if they are functions::
 
-    from flax import nn as linen
+    from flax import linen as nn
 
     class Module(nn.Module):
       features: Tuple[int] = [16, 4]
@@ -437,7 +437,8 @@ class Module:
                                    Variable)) and self._state.in_setup:
           var_name = f'{name}{suffix}'
           # namecheck to ensure named variable matches self attribute name.
-          if self._state.last_varname and self._state.last_varname != var_name:
+          if (suffix == '' and  # not when assigning lists or dicts
+              self._state.last_varname and self._state.last_varname != var_name):
             raise ValueError(f'Variable name {self._state.last_varname} must '
                              f'equal attribute name {var_name}.')
           self._state.last_varname = None
